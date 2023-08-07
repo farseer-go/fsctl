@@ -3,8 +3,9 @@ package cmd
 import "fmt"
 
 func init() {
-	Commands["err"] = err{}
-	Commands[""] = err{}
+	c := err{}
+	Commands[c.ShortCommand()] = c
+	Commands[c.FullCommand()] = c
 }
 
 type err struct {

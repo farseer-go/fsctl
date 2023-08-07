@@ -6,8 +6,9 @@ import (
 )
 
 func init() {
-	Commands["-h"] = help{}
-	Commands["help"] = help{}
+	c := help{}
+	Commands[c.ShortCommand()] = c
+	Commands[c.FullCommand()] = c
 }
 
 type help struct {

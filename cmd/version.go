@@ -5,8 +5,9 @@ import "fmt"
 const ver = "v0.8.0"
 
 func init() {
-	Commands["-v"] = version{}
-	Commands["version"] = version{}
+	c := version{}
+	Commands[c.ShortCommand()] = c
+	Commands[c.FullCommand()] = c
 }
 
 type version struct {
