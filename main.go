@@ -5,20 +5,19 @@ import (
 	"os"
 )
 
-// fsctl route
-// fsctl ioc
-// fsctl -r
 func main() {
-	args := os.Args
-	if len(args) == 1 {
-		cmd.Commands["err"].Execute(args)
+	// 参数个数不对
+	if len(os.Args) == 1 {
+		cmd.Commands["err"].Execute(os.Args)
 		return
 	}
 
-	c, isExists := cmd.Commands[args[1]]
+	c, isExists := cmd.Commands[os.Args[1]]
+	// 没有找到对应的命令
 	if !isExists {
-		cmd.Commands["err"].Execute(args)
+		cmd.Commands["err"].Execute(os.Args)
 		return
 	}
-	c.Execute(args)
+	// 命令正确，执行命令
+	c.Execute(os.Args)
 }
