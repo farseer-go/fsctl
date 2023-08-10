@@ -1,6 +1,9 @@
 package cmd
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/farseer-go/fsctl/utils"
+)
 
 const ver = "v0.8.0"
 
@@ -14,7 +17,7 @@ type version struct {
 }
 
 func (receiver version) Execute(args []string) {
-	fmt.Println("当前版本：", Yellow(ver))
+	fmt.Println("当前版本：", utils.Yellow(ver))
 }
 func (receiver version) FullCommand() string {
 	return "version"

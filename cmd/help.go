@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/farseer-go/fsctl/utils"
 	"strings"
 )
 
@@ -18,7 +19,7 @@ func (receiver help) Execute(args []string) {
 	Commands["-v"].Execute(args)
 	for k, c := range Commands {
 		if strings.HasPrefix(k, "-") {
-			fmt.Printf("fsctl %s\t| %s\t%s\r\n", Red(c.FullCommand()), Blue(c.ShortCommand()), Green(c.CommandDesc()))
+			fmt.Printf("fsctl %s\t| %s\t%s\r\n", utils.Red(c.FullCommand()), utils.Blue(c.ShortCommand()), utils.Green(c.CommandDesc()))
 		}
 	}
 }
