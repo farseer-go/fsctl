@@ -28,48 +28,43 @@ type funcParam struct {
 }
 
 // ParsePackageComment 解析包注解
-func (receiver *RouteComment) ParsePackageComment(comment string) {
-	if comment == "" {
+func (receiver *RouteComment) ParsePackageComment(ant *Annotation) {
+	if ant == nil {
 		return
 	}
-	comments := strings.Split(comment, " ")
-	if strings.ToLower(comments[0]) == "area" {
-		receiver.Area = comments[1]
+	if ant.IsArea() {
+		receiver.Area = ant.Cmd
 		return
 	}
 }
 
 // ParseFuncComment 解析函数注解
-func (receiver *RouteComment) ParseFuncComment(comment string) {
-	if comment == "" {
+func (receiver *RouteComment) ParseFuncComment(ant *Annotation) {
+	if ant == nil {
 		return
 	}
-	comments := strings.Split(comment, " ")
 	// 解析路由地址 @get @post @put @delete
-	if strings.ToLower(comments[0]) == "get" ||
-		strings.ToLower(comments[0]) == "post" ||
-		strings.ToLower(comments[0]) == "put" ||
-		strings.ToLower(comments[0]) == "delete" {
-		receiver.Method = strings.ToUpper(comments[0])
-		receiver.Url = comments[1]
+	if ant.IsApi() {
+		receiver.Method = strings.ToUpper(ant.Cmd)
+		receiver.Url = ant.Args[0]
 		return
 	}
 
 	// 解析过滤器 @filter
-	if strings.ToLower(comments[0]) == "filter" {
-		receiver.filters = comments[1:]
+	if ant.IsFilter() {
+		receiver.filters = ant.Args
 		return
 	}
 
 	// 解析过滤器 @di
-	if strings.ToLower(comments[0]) == "di" && len(comments) == 3 {
-		receiver.IocNames[comments[1]] = comments[2]
+	if ant.IsDi() {
+		receiver.IocNames[ant.Args[0]] = ant.Args[1]
 		return
 	}
 
 	// 解析返回Message @message
-	if strings.ToLower(comments[0]) == "message" {
-		receiver.StatusMessage = comments[1]
+	if ant.IsMessage() {
+		receiver.StatusMessage = ant.Args[0]
 		return
 	}
 }
@@ -163,12 +158,12 @@ func BuildRoute(routePath string, routeComments []RouteComment) string {
 
 	for _, comment := range routeComments {
 		builder.WriteString(fmt.Sprintf("\t{"))
-		builder.WriteString(fmt.Sprintf("Method: \"%s\", ", comment.Method))
-		builder.WriteString(fmt.Sprintf("Url: \"%s\", ", comment.Url))
-		builder.WriteString(fmt.Sprintf("Action: %s.%s, ", comment.PackageName, comment.FuncName))
-		builder.WriteString(fmt.Sprintf("Message: \"%s\", ", comment.StatusMessage))
+		builder.WriteString(fmt.Sprintf("\"%s\", ", comment.Method))
+		builder.WriteString(fmt.Sprintf("\"%s\", ", comment.Url))
+		builder.WriteString(fmt.Sprintf("%s.%s, ", comment.PackageName, comment.FuncName))
+		builder.WriteString(fmt.Sprintf("\"%s\", ", comment.StatusMessage))
 		// 函数的入参
-		builder.WriteString(fmt.Sprintf("Params: []string{"))
+		builder.WriteString(fmt.Sprintf("[]string{"))
 		for i := 0; i < len(comment.paramName); i++ {
 			// 基础类型，直接使用参数名称
 			if comment.paramName[i].isBasic {

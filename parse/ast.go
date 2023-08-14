@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-const CommentPrefix = "//"
-
 func ASTDir(path string, fund func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl)) {
 	files := file.GetFiles(path, "*.go", true)
 	for _, filePath := range files {

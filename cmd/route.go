@@ -11,23 +11,23 @@ import (
 )
 
 func init() {
-	c := route{}
+	c := route{rootPath: "../demo/shopping/", routePath: "route.go"}
 	Commands[c.ShortCommand()] = c
 	Commands[c.FullCommand()] = c
 }
 
 type route struct {
+	rootPath  string
+	routePath string
 }
 
 func (receiver route) Execute(args []string) {
-	rootPath := "../demo/shopping/"
-	routePath := rootPath + "route.go"
-
-	receiver.checkRoute(routePath)
+	receiver.routePath = receiver.rootPath + receiver.routePath
+	receiver.checkRoute()
 
 	var routeComments []parse.RouteComment
 	// 解析整个项目
-	parse.ASTDir(rootPath, func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl) {
+	parse.ASTDir(receiver.rootPath, func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl) {
 		if funcDecl.Doc == nil {
 			return
 		}
@@ -36,25 +36,25 @@ func (receiver route) Execute(args []string) {
 		// 解析头部注解：区域
 		if astFile.Doc != nil {
 			for _, comment := range astFile.Doc.List {
-				// 去除前缀：// 空格
-				commentText := clearCommentPrefix(comment.Text)
+				// 得到注解
+				ant := parse.GetAnnotation(comment.Text)
 				// 解析
-				rc.ParsePackageComment(commentText)
+				rc.ParsePackageComment(ant)
 			}
 		}
 		// 解析是否有注解
 		for _, comment := range funcDecl.Doc.List {
-			// 去除前缀：// 空格
-			commentText := clearCommentPrefix(comment.Text)
+			// 得到注解
+			ant := parse.GetAnnotation(comment.Text)
 			// 解析
-			rc.ParseFuncComment(commentText)
+			rc.ParseFuncComment(ant)
 		}
 
 		// 解析成功
 		if rc.IsHaveComment() {
 			// 移除相对路径和文件名，得到包路径
-			rc.PackagePath = filePath[len(rootPath):strings.LastIndex(filePath, "/")]
-			rc.PackagePath = parse.GetRootPackage(rootPath) + "/" + rc.PackagePath
+			rc.PackagePath = filePath[len(receiver.rootPath):strings.LastIndex(filePath, "/")]
+			rc.PackagePath = parse.GetRootPackage(receiver.rootPath) + "/" + rc.PackagePath
 			// 解析函数类型
 			rc.ParseFuncType(astFile, funcDecl)
 			// 解析Url
@@ -68,18 +68,8 @@ func (receiver route) Execute(args []string) {
 	})
 
 	// 生成route.go文件
-	routeContent := parse.BuildRoute(routePath, routeComments)
-	file.WriteString(routePath, routeContent)
-}
-
-// 检查根目录route.go文件是否为fsctl工具生成
-func (receiver route) checkRoute(routePath string) {
-	if file.IsExists(routePath) && !parse.CheckIsRoute(routePath) {
-		fmt.Printf(utils.Red("route.go文件不是fsctl工具生成，请手动删除./route.go后再重新运行此命令"))
-		os.Exit(0)
-	}
-	// 删除route.go文件
-	file.Delete(routePath)
+	routeContent := parse.BuildRoute(receiver.routePath, routeComments)
+	file.WriteString(receiver.routePath, routeContent)
 }
 
 func (receiver route) FullCommand() string {
@@ -94,15 +84,12 @@ func (receiver route) CommandDesc() string {
 	return "动态路由配置"
 }
 
-// 只取带 // @xxx的注解
-func clearCommentPrefix(comment string) string {
-	// 去除前缀：//
-	comment = strings.TrimPrefix(comment, parse.CommentPrefix)
-	// 去除空格
-	comment = strings.TrimPrefix(comment, " ")
-	// 约定前缀为@标记
-	if strings.HasPrefix(comment, "@") {
-		return strings.TrimPrefix(comment, "@")
+// 检查根目录route.go文件是否为fsctl工具生成
+func (receiver route) checkRoute() {
+	if file.IsExists(receiver.routePath) && !parse.CheckIsRoute(receiver.routePath) {
+		fmt.Printf(utils.Red("route.go文件不是fsctl工具生成，请手动删除./route.go后再重新运行此命令"))
+		os.Exit(0)
 	}
-	return ""
+	// 删除route.go文件
+	file.Delete(receiver.routePath)
 }
