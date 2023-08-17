@@ -1,0 +1,1 @@
+    {"{method}", "{url}", {funcName}, "{message}", []string{{param}}},

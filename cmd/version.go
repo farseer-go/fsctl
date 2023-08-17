@@ -6,9 +6,10 @@ import (
 )
 
 const ver = "v0.8.0"
+const farseerVer = "v0.8.0"
 
 func init() {
-	c := version{}
+	c := &version{}
 	Commands[c.ShortCommand()] = c
 	Commands[c.FullCommand()] = c
 }
@@ -16,17 +17,18 @@ func init() {
 type version struct {
 }
 
-func (receiver version) Execute(args []string) {
-	fmt.Println("当前版本：", utils.Yellow(ver))
+func (receiver *version) Execute(args []string) {
+	fmt.Println("工具版本：", utils.Yellow(ver))
+	fmt.Println("框架版本：", utils.Yellow(farseerVer))
 }
-func (receiver version) FullCommand() string {
+func (receiver *version) FullCommand() string {
 	return "version"
 }
 
-func (receiver version) ShortCommand() string {
+func (receiver *version) ShortCommand() string {
 	return "-v"
 }
 
-func (receiver version) CommandDesc() string {
+func (receiver *version) CommandDesc() string {
 	return "显示当前工具版本"
 }

@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	c := route{rootPath: "../demo/shopping/", routePath: "route.go"}
+	c := &route{rootPath: "../demo/shopping/", routePath: "route.go"}
 	Commands[c.ShortCommand()] = c
 	Commands[c.FullCommand()] = c
 }
@@ -21,7 +21,7 @@ type route struct {
 	routePath string
 }
 
-func (receiver route) Execute(args []string) {
+func (receiver *route) Execute(args []string) {
 	receiver.routePath = receiver.rootPath + receiver.routePath
 	receiver.checkRoute()
 
@@ -68,24 +68,23 @@ func (receiver route) Execute(args []string) {
 	})
 
 	// 生成route.go文件
-	routeContent := parse.BuildRoute(receiver.routePath, routeComments)
-	file.WriteString(receiver.routePath, routeContent)
+	parse.BuildRoute(receiver.routePath, routeComments)
 }
 
-func (receiver route) FullCommand() string {
+func (receiver *route) FullCommand() string {
 	return "route"
 }
 
-func (receiver route) ShortCommand() string {
+func (receiver *route) ShortCommand() string {
 	return "-r"
 }
 
-func (receiver route) CommandDesc() string {
+func (receiver *route) CommandDesc() string {
 	return "动态路由配置"
 }
 
 // 检查根目录route.go文件是否为fsctl工具生成
-func (receiver route) checkRoute() {
+func (receiver *route) checkRoute() {
 	if file.IsExists(receiver.routePath) && !parse.CheckIsRoute(receiver.routePath) {
 		fmt.Printf(utils.Red("route.go文件不是fsctl工具生成，请手动删除./route.go后再重新运行此命令"))
 		os.Exit(0)

@@ -2,6 +2,8 @@ package parse
 
 import (
 	"fmt"
+	"github.com/farseer-go/fsctl/builder"
+	"github.com/farseer-go/utils/condition"
 	"go/ast"
 	"strings"
 )
@@ -136,7 +138,7 @@ func CheckIsRoute(routePath string) (isRoute bool) {
 }
 
 // BuildRoute 生成route.go文件
-func BuildRoute(routePath string, routeComments []RouteComment) string {
+func BuildRoute(routePath string, routeComments []RouteComment) {
 	// 引用包（使用map，为了去重）
 	imports := make(map[string]any)
 	imports["github.com/farseer-go/webapi"] = struct{}{}
@@ -144,42 +146,40 @@ func BuildRoute(routePath string, routeComments []RouteComment) string {
 		imports[rc.PackagePath] = struct{}{}
 	}
 
-	var builder strings.Builder
-	builder.WriteString("// 该文件由fsctl route命令自动生成，请不要手动修改此文件\n")
-	builder.WriteString("package main\n")
 	// import
-	builder.WriteString("\n")
+	var importBuilder strings.Builder
 	for packName := range imports {
-		builder.WriteString(fmt.Sprintf("import \"%s\"\n", packName))
-	}
-	builder.WriteString("\n")
-	// var route = []webapi.Route{ }
-	builder.WriteString("var route = []webapi.Route{\n")
-
-	for _, comment := range routeComments {
-		builder.WriteString(fmt.Sprintf("\t{"))
-		builder.WriteString(fmt.Sprintf("\"%s\", ", comment.Method))
-		builder.WriteString(fmt.Sprintf("\"%s\", ", comment.Url))
-		builder.WriteString(fmt.Sprintf("%s.%s, ", comment.PackageName, comment.FuncName))
-		builder.WriteString(fmt.Sprintf("\"%s\", ", comment.StatusMessage))
-		// 函数的入参
-		builder.WriteString(fmt.Sprintf("[]string{"))
-		for i := 0; i < len(comment.paramName); i++ {
-			// 基础类型，直接使用参数名称
-			if comment.paramName[i].isBasic {
-				builder.WriteString(fmt.Sprintf("\"%s\"", comment.paramName[i].paramName))
-			} else { // 非基础类型，使用ioc别名
-				builder.WriteString(fmt.Sprintf("\"%s\"", comment.paramName[i].iocName))
-			}
-			if i < len(comment.paramName)-1 {
-				builder.WriteString(", ")
-			}
+		if importBuilder.Len() > 0 {
+			importBuilder.WriteString("\n")
 		}
-		builder.WriteString(fmt.Sprintf("}"))
-
-		builder.WriteString(fmt.Sprintf("},\n"))
+		importBuilder.WriteString(fmt.Sprintf("\t\"%s\"", packName))
 	}
 
-	builder.WriteString("}\n")
-	return builder.String()
+	builder.RouteBuilder(routePath, importBuilder.String(), func(routeItemTpl string) string {
+		var routeBuilder strings.Builder
+		for _, comment := range routeComments {
+			if routeBuilder.Len() > 0 {
+				routeBuilder.WriteString("\n")
+			}
+			contents := strings.ReplaceAll(routeItemTpl, "{method}", comment.Method)
+			contents = strings.ReplaceAll(contents, "{url}", comment.Url)
+			contents = strings.ReplaceAll(contents, "{funcName}", comment.PackageName+"."+comment.FuncName)
+			contents = strings.ReplaceAll(contents, "{message}", comment.StatusMessage)
+
+			// 函数的入参
+			var paramBuilder strings.Builder
+			for i := 0; i < len(comment.paramName); i++ {
+				// 基础类型，直接使用参数名称，非基础类型，使用ioc别名
+				paramName := condition.IsTrue(comment.paramName[i].isBasic, comment.paramName[i].paramName, comment.paramName[i].iocName)
+				paramBuilder.WriteString(fmt.Sprintf("\"%s\"", paramName))
+
+				if i < len(comment.paramName)-1 {
+					paramBuilder.WriteString(", ")
+				}
+			}
+			contents = strings.ReplaceAll(contents, "{param}", paramBuilder.String())
+			routeBuilder.WriteString(contents)
+		}
+		return routeBuilder.String()
+	})
 }

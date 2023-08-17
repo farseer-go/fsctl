@@ -24,3 +24,9 @@ func GetRootPackage(rootPath string) string {
 	}
 	return ""
 }
+
+// ExistsGoMod 判断go.mod文件是否存在
+func ExistsGoMod(rootPath string) bool {
+	goModPath := rootPath + "go.mod"
+	return file.IsExists(goModPath)
+}
