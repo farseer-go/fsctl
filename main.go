@@ -22,5 +22,5 @@ func main() {
 	// 命令正确，执行命令
 	c.Execute(os.Args)
 
-	fmt.Print("成功...")
+	fmt.Println("成功...")
 }

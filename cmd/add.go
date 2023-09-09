@@ -67,7 +67,7 @@ func (receiver *add) Execute(args []string) {
 	builder.TplBuilder(repositoryTpl, tplValue, receiver.projectPath+"domain/"+receiver.lowerName+"/repository.go")     // domain/lowerName/repository.go
 
 	// infrastructure
-	file.CreateDir766(receiver.projectPath + "infrastructure/repository/" + receiver.lowerName)
+	file.CreateDir766(receiver.projectPath + "infrastructure/repository/model")
 	builder.TplBuilder(poTpl, tplValue, receiver.projectPath+"infrastructure/repository/model/"+receiver.lowerName+"PO.go") // infrastructure/repository/model/demoPO.go
 	// 找到上下文，然后添加DomainSet
 	contextContent := file.ReadAllLines(receiver.contextPath)
