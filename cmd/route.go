@@ -11,7 +11,8 @@ import (
 )
 
 func init() {
-	c := &route{rootPath: "../demo/shopping/", routePath: "route.go"}
+	str, _ := os.Getwd()
+	c := &route{rootPath: str + "/"}
 	Commands[c.ShortCommand()] = c
 	Commands[c.FullCommand()] = c
 }
@@ -22,7 +23,7 @@ type route struct {
 }
 
 func (receiver *route) Execute(args []string) {
-	receiver.routePath = receiver.rootPath + receiver.routePath
+	receiver.routePath = receiver.rootPath + "route.go"
 	receiver.checkRoute()
 
 	var routeComments []parse.RouteComment
