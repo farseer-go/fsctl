@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/farseer-go/fsctl/cmd"
 	"os"
 )
@@ -20,4 +21,6 @@ func main() {
 	}
 	// 命令正确，执行命令
 	c.Execute(os.Args)
+
+	fmt.Print("成功...")
 }

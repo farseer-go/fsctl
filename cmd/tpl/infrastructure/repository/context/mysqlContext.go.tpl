@@ -16,8 +16,6 @@ type mysqlContext struct {
 	core.ITransaction
 	// 获取原生ORM框架（不使用TableSet或DomainSet）
 	data.IInternalContext
-	// 定义数据库表 订单 映射TableSet
-	Demo data.DomainSet[model.DemoPO, demo.DomainObject] `data:"name=farseer_go_demo"`
 }
 
 // InitMysqlContext 初始化上下文

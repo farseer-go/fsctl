@@ -10,6 +10,7 @@ import (
 
 const modulePrefix = "module "
 
+// GetRootPackage 得到包名
 func GetRootPackage(rootPath string) string {
 	goModPath := rootPath + "go.mod"
 	goModContent := file.ReadAllLines(goModPath)

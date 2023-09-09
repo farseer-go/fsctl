@@ -12,23 +12,23 @@ import (
 
 func init() {
 	str, _ := os.Getwd()
-	c := &route{rootPath: str + "/"}
+	c := &route{projectPath: str + "/"}
 	Commands[c.ShortCommand()] = c
 	Commands[c.FullCommand()] = c
 }
 
 type route struct {
-	rootPath  string
-	routePath string
+	projectPath string
+	routePath   string
 }
 
 func (receiver *route) Execute(args []string) {
-	receiver.routePath = receiver.rootPath + "route.go"
+	receiver.routePath = receiver.projectPath + "route.go"
 	receiver.checkRoute()
 
 	var routeComments []parse.RouteComment
 	// 解析整个项目
-	parse.ASTDir(receiver.rootPath, func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl) {
+	parse.ASTDir(receiver.projectPath, func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl) {
 		if funcDecl.Doc == nil {
 			return
 		}
@@ -54,8 +54,8 @@ func (receiver *route) Execute(args []string) {
 		// 解析成功
 		if rc.IsHaveComment() {
 			// 移除相对路径和文件名，得到包路径
-			rc.PackagePath = filePath[len(receiver.rootPath):strings.LastIndex(filePath, "/")]
-			rc.PackagePath = parse.GetRootPackage(receiver.rootPath) + "/" + rc.PackagePath
+			rc.PackagePath = filePath[len(receiver.projectPath):strings.LastIndex(filePath, "/")]
+			rc.PackagePath = parse.GetRootPackage(receiver.projectPath) + "/" + rc.PackagePath
 			// 解析函数类型
 			rc.ParseFuncType(astFile, funcDecl)
 			// 解析Url
