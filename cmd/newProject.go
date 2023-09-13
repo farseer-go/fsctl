@@ -55,7 +55,7 @@ var farseerYamlTpl string
 // Execute fsctl new project1
 func (receiver *newProject) Execute(args []string) {
 	if len(args) != 3 {
-		fmt.Printf(utils.Red("参数不正确，新建项目需要填写项目名称。如：fsctl new project1"))
+		fmt.Printf(utils.Red("参数不正确，新建项目需要填写项目名称。如：fsctl new project1\n"))
 		os.Exit(0)
 	}
 
@@ -103,9 +103,6 @@ func (receiver *newProject) Execute(args []string) {
 	// rotue.go
 	r := route{projectPath: receiver.projectPath, routePath: "route.go"}
 	r.Execute(args)
-	// add demo
-	a := add{projectPath: receiver.projectPath}
-	a.Execute([]string{"fsctl", "add", "demo"})
 }
 
 func (receiver *newProject) FullCommand() string {

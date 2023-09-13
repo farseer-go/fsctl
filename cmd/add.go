@@ -44,7 +44,7 @@ var domainSetTpl string
 // Execute fsctl add user
 func (receiver *add) Execute(args []string) {
 	if len(args) != 3 {
-		fmt.Printf(utils.Red("参数不正确，添加新的领域命令，如：fsctl add xxx"))
+		fmt.Printf(utils.Red("参数不正确，添加新的领域命令，如：fsctl add xxx\n"))
 		os.Exit(0)
 	}
 	receiver.check()
@@ -113,7 +113,7 @@ func (receiver *add) CommandDesc() string {
 // 检查是否在项目的根目录中
 func (receiver *add) check() {
 	if !file.IsExists(receiver.projectPath + "go.mod") {
-		fmt.Printf(utils.Red("当前目录并不是go项目，请到go项目的根目录中重新执行fsctl命令"))
+		fmt.Printf(utils.Red("当前目录并不是go项目，请到go项目的根目录中重新执行fsctl命令\n"))
 		os.Exit(0)
 	}
 }

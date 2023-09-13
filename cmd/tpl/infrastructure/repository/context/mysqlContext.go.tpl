@@ -3,7 +3,6 @@ package context
 import (
 	"github.com/farseer-go/data"
 	"github.com/farseer-go/fs/core"
-	"{projectName}/domain/demo"
 	"{projectName}/infrastructure/repository/model"
 )
 

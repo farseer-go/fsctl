@@ -87,7 +87,7 @@ func (receiver *route) CommandDesc() string {
 // 检查根目录route.go文件是否为fsctl工具生成
 func (receiver *route) checkRoute() {
 	if file.IsExists(receiver.routePath) && !parse.CheckIsRoute(receiver.routePath) {
-		fmt.Printf(utils.Red("route.go文件不是fsctl工具生成，请手动删除./route.go后再重新运行此命令"))
+		fmt.Printf(utils.Red("route.go文件不是fsctl工具生成，请手动删除./route.go后再重新运行此命令\n"))
 		os.Exit(0)
 	}
 	// 删除route.go文件

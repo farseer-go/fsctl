@@ -15,7 +15,7 @@ func GetRootPackage(rootPath string) string {
 	goModPath := rootPath + "go.mod"
 	goModContent := file.ReadAllLines(goModPath)
 	if len(goModContent) == 0 {
-		fmt.Printf(utils.Red("无法读取go.mod文件"))
+		fmt.Printf(utils.Red("无法读取go.mod文件\n"))
 		os.Exit(0)
 	}
 	for _, content := range goModContent {

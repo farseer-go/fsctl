@@ -11,4 +11,6 @@ require (
 	github.com/farseer-go/redis {farseerVer}
 	github.com/farseer-go/tasks {farseerVer}
 	github.com/farseer-go/webapi {farseerVer}
+	github.com/farseer-go/eventBus {farseerVer}
+	github.com/farseer-go/queue {farseerVer}
 )
