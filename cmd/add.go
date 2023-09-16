@@ -94,8 +94,8 @@ func (receiver *add) Execute(args []string) {
 		}
 	}
 	// application
-	file.CreateDir766(receiver.projectPath + "application/" + receiver.lowerName)
-	builder.TplBuilder(helloAppTpl, tplValue, receiver.projectPath+"application/"+receiver.lowerName+"/app.go") // application/demo/app.go
+	file.CreateDir766(receiver.projectPath + "application/" + receiver.lowerName + "App")
+	builder.TplBuilder(helloAppTpl, tplValue, receiver.projectPath+"application/"+receiver.lowerName+"App/app.go") // application/demo/app.go
 }
 
 func (receiver *add) FullCommand() string {
