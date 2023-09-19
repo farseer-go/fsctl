@@ -9,11 +9,6 @@ Rabbit:
       - "ExchangeName=Ex1,RoutingKey=,ExchangeType=fanout,UseConfirmModel=false,AutoCreateExchange=true"
 Etcd:
   default: "Server=127.0.0.1:2379|127.0.0.1:2379,ConnectTimeout=5000"
-FSchedule:
-  Server: "http://127.0.0.1:888"
-  ReservedTaskCount: 20
-  PullCount: 6
-  WorkCount: 20
 ElasticSearch:
   es: "Server=http://127.0.0.1:9200,Username=es,Password=123456,ReplicasCount=1,ShardsCount=1,RefreshInterval=5,IndexFormat=yyyy_MM"
   LinkTrack: "Server=http://127.0.0.1:9200,Username=es,Password=123456"
