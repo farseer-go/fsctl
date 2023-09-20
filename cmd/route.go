@@ -58,12 +58,16 @@ func (receiver *route) Execute(args []string) {
 			rc.PackagePath = parse.GetRootPackage(receiver.projectPath) + "/" + rc.PackagePath
 			// 解析函数类型
 			rc.ParseFuncType(astFile, funcDecl)
-			// 解析Url
-			rc.Url = strings.ToLower(strings.Replace(rc.Url, "{area}", rc.Area, -1))
-			rc.Url = strings.ToLower(strings.Replace(rc.Url, "{action}", rc.FuncName, -1))
-			if !strings.HasPrefix(rc.Url, "/") {
-				rc.Url = "/" + rc.Url
+			if rc.Area != "" {
+				rc.Area = strings.TrimPrefix(rc.Area, "/")
+				rc.Area = strings.TrimSuffix(rc.Area, "/")
 			}
+
+			fmt.Printf("找到路由：area=%s, [%s]%s ==> %s.%s\n", rc.Area, rc.Method, rc.Url, rc.PackageName, rc.FuncName)
+
+			rc.Url = strings.TrimPrefix(rc.Url, "/")
+			rc.Url = "/" + rc.Area + "/" + rc.Url
+			rc.Url = strings.Replace(rc.Url, "{action}", rc.FuncName, -1)
 			routeComments = append(routeComments, rc)
 		}
 	})

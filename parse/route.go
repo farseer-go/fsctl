@@ -35,7 +35,7 @@ func (receiver *RouteComment) ParsePackageComment(ant *Annotation) {
 		return
 	}
 	if ant.IsArea() {
-		receiver.Area = ant.Cmd
+		receiver.Area = ant.Args[0]
 		return
 	}
 }
