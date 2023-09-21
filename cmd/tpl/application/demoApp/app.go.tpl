@@ -1,5 +1,5 @@
 // @area api
-package demoApp
+package {do}App
 
 import (
 	"{projectName}/domain/demo"
