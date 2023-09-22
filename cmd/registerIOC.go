@@ -1,10 +1,10 @@
 package cmd
 
-func init() {
-	c := &registerIOC{}
-	Commands[c.ShortCommand()] = c
-	Commands[c.FullCommand()] = c
-}
+//func init() {
+//	c := &registerIOC{}
+//	Commands[c.ShortCommand()] = c
+//	Commands[c.FullCommand()] = c
+//}
 
 type registerIOC struct {
 }
