@@ -20,4 +20,4 @@ go.work
 /test/log/
 /project1/
 
-fsctl
+/fsctl
