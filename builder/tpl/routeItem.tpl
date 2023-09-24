@@ -1,1 +1,1 @@
-    {"{method}", "{url}", {funcName}, "{message}", []string{{param}}},
+    {"{method}", "{url}", {funcName}, "{message}", nil, []string{{param}}},
