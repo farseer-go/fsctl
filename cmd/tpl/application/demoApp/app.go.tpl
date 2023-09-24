@@ -6,8 +6,7 @@ import (
 )
 
 // Hello 演示
-// repository通过container自动注入实现进来
-// @get {area}/hello
+// @get {Do}/{action}
 // @filter jwt auth
 // @message 查询成功
 func Hello(name string, repository {do}.Repository) string {
