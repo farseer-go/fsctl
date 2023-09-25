@@ -16,5 +16,7 @@ var routeItemTpl string
 func RouteBuilder(path string, imports string, routeItemBuilder func(routeItemTpl string) string) {
 	contents := strings.ReplaceAll(routeTpl, "{import}", imports)
 	contents = strings.ReplaceAll(contents, "{route}", routeItemBuilder(routeItemTpl))
-	file.WriteString(path, contents)
+	if file.ReadString(path) != contents {
+		file.WriteString(path, contents)
+	}
 }
