@@ -3,10 +3,8 @@ Database:
 Redis:
   default: "Server=127.0.0.1:6379,DB=13,Password=,ConnectTimeout=600000,SyncTimeout=10000,ResponseTimeout=10000"
 Rabbit:
-  - Server: "Server=127.0.0.1:5672,UserName=farseer,Password=farseer"
-    Exchange:
-      - "ExchangeName=Ex1,RoutingKey=,ExchangeType=fanout,UseConfirmModel=false,AutoCreateExchange=true"
-      - "ExchangeName=Ex1,RoutingKey=,ExchangeType=fanout,UseConfirmModel=false,AutoCreateExchange=true"
+  Ex1: "Server=rabbit:5672,UserName=farseer,Password=farseer,Exchange=Ex1,RoutingKey=,Type=fanout,UseConfirm=false,AutoCreate=true"
+  Ex2: "Server=rabbit:5672,UserName=farseer,Password=farseer,Exchange=Ex2,RoutingKey=,Type=fanout,UseConfirm=false,AutoCreate=true"
 Etcd:
   default: "Server=127.0.0.1:2379|127.0.0.1:2379,ConnectTimeout=5000"
 ElasticSearch:
