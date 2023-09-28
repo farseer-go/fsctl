@@ -54,8 +54,7 @@ func (receiver *route) Execute(args []string) {
 		// 解析成功
 		if rc.IsHaveComment() {
 			// 移除相对路径和文件名，得到包路径
-			rc.PackagePath = filePath[len(receiver.projectPath):strings.LastIndex(filePath, "/")]
-			rc.PackagePath = parse.GetRootPackage(receiver.projectPath) + "/" + rc.PackagePath
+			rc.PackagePath = parse.GetRootPackage(receiver.projectPath) + "/" + filePath[len(receiver.projectPath):strings.LastIndex(filePath, "/")]
 			// 解析函数类型
 			rc.ParseFuncType(astFile, funcDecl)
 			if rc.Area != "" {
