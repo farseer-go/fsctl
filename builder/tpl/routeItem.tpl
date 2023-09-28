@@ -1,1 +1,1 @@
-    {"{method}", "{url}", {funcName}, "{message}", nil, []string{{param}}},
+    {"{method}", "{url}", {funcName}, "{message}", []context.IFilter{{filters}}, []string{{param}}},

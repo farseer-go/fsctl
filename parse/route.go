@@ -54,7 +54,9 @@ func (receiver *RouteComment) ParseFuncComment(ant *Annotation) {
 
 	// 解析过滤器 @filter
 	if ant.IsFilter() {
-		receiver.filters = ant.Args
+		for _, arg := range ant.Args {
+			receiver.filters = append(receiver.filters, arg+"{}")
+		}
 		return
 	}
 
@@ -142,6 +144,8 @@ func BuildRoute(routePath string, routeComments []RouteComment) {
 	// 引用包（使用map，为了去重）
 	imports := make(map[string]any)
 	imports["github.com/farseer-go/webapi"] = struct{}{}
+	imports["github.com/farseer-go/webapi/context"] = struct{}{}
+	imports["github.com/farseer-go/webapi/filter"] = struct{}{}
 	for _, rc := range routeComments {
 		imports[rc.PackagePath] = struct{}{}
 	}
@@ -165,7 +169,7 @@ func BuildRoute(routePath string, routeComments []RouteComment) {
 			contents = strings.ReplaceAll(contents, "{url}", comment.Url)
 			contents = strings.ReplaceAll(contents, "{funcName}", comment.PackageName+"."+comment.FuncName)
 			contents = strings.ReplaceAll(contents, "{message}", comment.StatusMessage)
-
+			contents = strings.ReplaceAll(contents, "{filters}", strings.Join(comment.filters, ","))
 			// 函数的入参
 			var paramBuilder strings.Builder
 			for i := 0; i < len(comment.paramName); i++ {
