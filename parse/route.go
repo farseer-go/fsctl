@@ -2,6 +2,7 @@ package parse
 
 import (
 	"fmt"
+	"github.com/farseer-go/collections"
 	"github.com/farseer-go/fsctl/builder"
 	"github.com/farseer-go/utils/condition"
 	"go/ast"
@@ -142,17 +143,24 @@ func CheckIsRoute(routePath string) (isRoute bool) {
 // BuildRoute 生成route.go文件
 func BuildRoute(routePath string, routeComments []RouteComment) {
 	// 引用包（使用map，为了去重）
-	imports := make(map[string]any)
-	imports["github.com/farseer-go/webapi"] = struct{}{}
-	imports["github.com/farseer-go/webapi/context"] = struct{}{}
-	imports["github.com/farseer-go/webapi/filter"] = struct{}{}
+	imports := collections.NewList[string]("github.com/farseer-go/webapi", "github.com/farseer-go/webapi/context")
+	if collections.NewList(routeComments...).Where(func(item RouteComment) bool {
+		for _, filter := range item.filters {
+			if strings.HasPrefix(filter, "filter.") {
+				return true
+			}
+		}
+		return false
+	}).Any() {
+		imports.Add("github.com/farseer-go/webapi/filter")
+	}
 	for _, rc := range routeComments {
-		imports[rc.PackagePath] = struct{}{}
+		imports.Add(rc.PackagePath)
 	}
 
 	// import
 	var importBuilder strings.Builder
-	for packName := range imports {
+	for _, packName := range imports.Distinct().OrderByItem().ToArray() {
 		if importBuilder.Len() > 0 {
 			importBuilder.WriteString("\n")
 		}
