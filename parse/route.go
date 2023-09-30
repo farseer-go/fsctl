@@ -3,6 +3,7 @@ package parse
 import (
 	"fmt"
 	"github.com/farseer-go/collections"
+	"github.com/farseer-go/fs/parse"
 	"github.com/farseer-go/fsctl/builder"
 	"github.com/farseer-go/utils/condition"
 	"go/ast"
@@ -142,30 +143,22 @@ func CheckIsRoute(routePath string) (isRoute bool) {
 
 // BuildRoute 生成route.go文件
 func BuildRoute(routePath string, routeComments []RouteComment) {
-	// 引用包（使用map，为了去重）
-	imports := collections.NewList[string]("github.com/farseer-go/webapi", "github.com/farseer-go/webapi/context")
-	if collections.NewList(routeComments...).Where(func(item RouteComment) bool {
-		for _, filter := range item.filters {
-			if strings.HasPrefix(filter, "filter.") {
-				return true
-			}
-		}
-		return false
-	}).Any() {
-		imports.Add("github.com/farseer-go/webapi/filter")
-	}
-	for _, rc := range routeComments {
-		imports.Add(rc.PackagePath)
-	}
+	// 加载框架、应用的包
+	lstPackageImport := loadImports(routeComments)
 
 	// import
 	var importBuilder strings.Builder
-	for _, packName := range imports.Distinct().OrderByItem().ToArray() {
+	lstPackageImport.Foreach(func(item *packageImportVO) {
 		if importBuilder.Len() > 0 {
 			importBuilder.WriteString("\n")
 		}
-		importBuilder.WriteString(fmt.Sprintf("\t\"%s\"", packName))
-	}
+		// 是否使用了包别名
+		if item.alias == "" {
+			importBuilder.WriteString(fmt.Sprintf("\t\"%s\"", item.packagePath))
+		} else {
+			importBuilder.WriteString(fmt.Sprintf("\t%s \"%s\"", item.alias, item.packagePath))
+		}
+	})
 
 	builder.RouteBuilder(routePath, importBuilder.String(), func(routeItemTpl string) string {
 		var routeBuilder strings.Builder
@@ -194,4 +187,59 @@ func BuildRoute(routePath string, routeComments []RouteComment) {
 		}
 		return routeBuilder.String()
 	})
+}
+
+type packageImportVO struct {
+	packagePath string // 包路径
+	alias       string // 包别名
+}
+
+// 加载框架、应用的包
+func loadImports(routeComments []RouteComment) collections.List[packageImportVO] {
+	// 添加框架的包
+	imports := collections.NewList[string]("github.com/farseer-go/webapi", "github.com/farseer-go/webapi/context")
+	if collections.NewList(routeComments...).Where(func(item RouteComment) bool {
+		for _, filter := range item.filters {
+			if strings.HasPrefix(filter, "filter.") {
+				return true
+			}
+		}
+		return false
+	}).Any() {
+		imports.Add("github.com/farseer-go/webapi/filter")
+	}
+	// 添加应用的包
+	for _, rc := range routeComments {
+		imports.Add(rc.PackagePath)
+	}
+
+	lstPackageImport := collections.NewList[packageImportVO]()
+	imports.Distinct().OrderByItem().Foreach(func(item *string) {
+		lstPackageImport.Add(packageImportVO{packagePath: *item})
+	})
+
+	// 检查包是否有同名
+	lstPackageNameTemp := collections.NewList[string]()
+	for i := 0; i < lstPackageImport.Count(); i++ {
+		packageNames := strings.Split(lstPackageImport.Index(i).packagePath, "/")
+		packageName := packageNames[len(packageNames)-1:][0]
+		// 说明包同名了，那么需要使用别名
+		if lstPackageNameTemp.Contains(packageName) {
+			vo := packageImportVO{
+				packagePath: lstPackageImport.Index(i).packagePath,
+				alias: packageName + parse.ToString(lstPackageNameTemp.Where(func(item string) bool {
+					return item == packageName
+				}).Count()+1),
+			}
+
+			lstPackageImport.Set(i, vo)
+			for ir, _ := range routeComments {
+				if routeComments[ir].PackagePath == vo.packagePath {
+					routeComments[ir].PackageName = vo.alias
+				}
+			}
+		}
+		lstPackageNameTemp.Add(packageName)
+	}
+	return lstPackageImport
 }
