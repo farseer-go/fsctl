@@ -11,8 +11,9 @@ import (
 func ASTDir(path string, fund func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl)) {
 	files := file.GetFiles(path, "*.go", true)
 	for _, filePath := range files {
-		//filePath = "../demo/shopping/application/orderApp/app.go"
-		if strings.HasSuffix(filePath, "_test.go") {
+		paths := strings.Split(filePath, "/")
+		fileName := paths[len(paths)-1:][0]
+		if strings.HasPrefix(fileName, "_") || strings.HasSuffix(filePath, "_test.go") {
 			continue
 		}
 		ASTFuncDecl(filePath, fund)
