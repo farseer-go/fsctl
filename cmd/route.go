@@ -18,22 +18,23 @@ func init() {
 }
 
 type route struct {
-	projectPath string
-	routePath   string
+	projectPath    string // 项目根目录
+	routePath      string // route.go路径
+	topPackageName string // 顶级包名
 }
 
 func (receiver *route) Execute(args []string) {
 	receiver.routePath = receiver.projectPath + "route.go"
+	receiver.topPackageName = parse.GetRootPackage(receiver.projectPath)
 	receiver.checkRoute()
 
 	var routeComments []parse.RouteComment
 	// 解析整个项目
-	parse.ASTDir(receiver.projectPath, func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl) {
+	parse.AstDirFuncDecl(receiver.projectPath, func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl) {
 		if funcDecl.Doc == nil {
 			return
 		}
-		rc := parse.RouteComment{IocNames: make(map[string]string)}
-
+		rc := parse.RouteComment{IocNames: make(map[string]string), ProjectPath: receiver.projectPath, TopPackageName: receiver.topPackageName}
 		// 解析头部注解：区域
 		if astFile.Doc != nil {
 			for _, comment := range astFile.Doc.List {
@@ -54,7 +55,7 @@ func (receiver *route) Execute(args []string) {
 		// 解析成功
 		if rc.IsHaveComment() {
 			// 移除相对路径和文件名，得到包路径
-			rc.PackagePath = parse.GetRootPackage(receiver.projectPath) + "/" + filePath[len(receiver.projectPath):strings.LastIndex(filePath, "/")]
+			rc.PackagePath = receiver.topPackageName + "/" + filePath[len(receiver.projectPath):strings.LastIndex(filePath, "/")]
 			// 解析函数类型
 			rc.ParseFuncType(astFile, funcDecl)
 			if rc.Area != "" {

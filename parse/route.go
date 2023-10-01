@@ -12,23 +12,25 @@ import (
 
 // RouteComment 路由注解、函数类型
 type RouteComment struct {
-	Area          string            // 区域 @area
-	Url           string            // 路由地址 @get {area}/order/{action}
-	Method        string            // 路由method @get {area}/order/{action}
-	filters       []string          // 过滤器 @filter jwt
-	IocNames      map[string]string // 注入别名 @di repository default
-	StatusMessage string            // api返回message @message 成功
-	PackagePath   string            // 包路径
-	PackageName   string            // 包名
-	FuncName      string            // handle名称
-	paramName     []funcParam       // handle入参
+	Area           string            // 区域 @area
+	Url            string            // 路由地址 @get {area}/order/{action}
+	Method         string            // 路由method @get {area}/order/{action}
+	filters        []string          // 过滤器 @filter jwt
+	IocNames       map[string]string // 注入别名 @di repository default
+	StatusMessage  string            // api返回message @message 成功
+	PackagePath    string            // 包路径
+	PackageName    string            // 包名
+	FuncName       string            // handle名称
+	paramName      []funcParam       // handle入参
+	ProjectPath    string            // 项目根目录
+	TopPackageName string            // 顶级包名
 }
 
 type funcParam struct {
-	paramName string // 参数名称
-	paramType string // 参数类型
-	isBasic   bool   // 是否为基础变量
-	iocName   string // ioc别名
+	paramName     string // 参数名称
+	paramTypeName string // 参数类型
+	iocName       string // ioc别名
+	typeName      string // 参数类型
 }
 
 // ParsePackageComment 解析包注解
@@ -82,16 +84,30 @@ func (receiver *RouteComment) ParseFuncType(astFile *ast.File, funcDecl *ast.Fun
 	receiver.FuncName = funcDecl.Name.Name
 	// 解析函数的入参
 	for _, field := range funcDecl.Type.Params.List {
-		var paramType string
-		var isBasic bool
+		var paramTypeName string
+		var typeName string
+
 		// 参数类型
 		switch fieldType := field.Type.(type) {
+		// 其它包的类型
 		case *ast.SelectorExpr:
-			paramType = fieldType.X.(*ast.Ident).Name + "." + fieldType.Sel.Name
-			isBasic = paramType == "time.Time"
+			packageName := fieldType.X.(*ast.Ident).Name
+			paramTypeName = packageName + "." + fieldType.Sel.Name
+			//if paramTypeName == "time.Time" {
+			//	isBasic = true
+			//	continue
+			//}
+			// 通过包名，去获取包路径
+			typeName = receiver.parseType(astFile, packageName, fieldType.Sel.Name)
 		case *ast.Ident:
-			paramType = fieldType.Name
-			isBasic = true
+			paramTypeName = fieldType.Name
+			typeName = paramTypeName
+		case *ast.ArrayType:
+			paramTypeName = "[]" + fieldType.Elt.(*ast.Ident).Name
+			typeName = paramTypeName
+		default:
+			paramTypeName = field.Names[0].Name
+			typeName = paramTypeName
 		}
 
 		for _, fieldName := range field.Names {
@@ -102,10 +118,10 @@ func (receiver *RouteComment) ParseFuncType(astFile *ast.File, funcDecl *ast.Fun
 				iocName = iocN
 			}
 			receiver.paramName = append(receiver.paramName, funcParam{
-				paramName: fieldName.Name, // 参数名
-				paramType: paramType,      // 参数类型
-				isBasic:   isBasic,        // 是否为基础变量
-				iocName:   iocName,
+				paramName:     fieldName.Name, // 参数名
+				paramTypeName: paramTypeName,  // 参数类型名称
+				typeName:      typeName,       // 参数类型名称
+				iocName:       iocName,
 			})
 		}
 	}
@@ -116,10 +132,47 @@ func (receiver *RouteComment) IsHaveComment() bool {
 	return receiver.Url != ""
 }
 
+func (receiver *RouteComment) parseType(astFile *ast.File, packageName string, paramTypeName string) string {
+	var typeName string
+	for _, importSpec := range astFile.Imports {
+		// 去除前后""
+		packagePath := strings.Trim(importSpec.Path.Value, "\"")
+		if !strings.HasSuffix(packagePath, packageName) {
+			continue
+		}
+		packagePath = strings.TrimPrefix(packagePath, receiver.TopPackageName)
+
+		AstDirTypeDecl(receiver.ProjectPath+packagePath, func(filePath string, astFile *ast.File, genDecl *ast.GenDecl) {
+			for _, specs := range genDecl.Specs {
+				switch d := specs.(type) {
+				case *ast.TypeSpec:
+					if paramTypeName == d.Name.Name {
+						switch t := d.Type.(type) {
+						case *ast.InterfaceType:
+							typeName = "interface"
+							return
+						case *ast.StructType:
+							typeName = "struct"
+							return
+						case *ast.Ident:
+							typeName = t.Name
+							return
+						}
+					}
+				}
+			}
+		})
+		if typeName != "" {
+			return typeName
+		}
+	}
+	return typeName
+}
+
 // CheckIsRoute 检查route.go文件
 func CheckIsRoute(routePath string) (isRoute bool) {
 	// 检查根目录是否有route.go文件，如果有则删除
-	ASTGenDecl(routePath, func(genDecl *ast.GenDecl) {
+	AstFileGenDecl(routePath, func(genDecl *ast.GenDecl) {
 		for _, spec := range genDecl.Specs {
 			switch s := spec.(type) {
 			case *ast.ValueSpec:
@@ -175,7 +228,7 @@ func BuildRoute(routePath string, routeComments []RouteComment) {
 			var paramBuilder strings.Builder
 			for i := 0; i < len(comment.paramName); i++ {
 				// 基础类型，直接使用参数名称，非基础类型，使用ioc别名
-				paramName := condition.IsTrue(comment.paramName[i].isBasic, comment.paramName[i].paramName, comment.paramName[i].iocName)
+				paramName := condition.IsTrue(comment.paramName[i].typeName != "interface", comment.paramName[i].paramName, comment.paramName[i].iocName)
 				paramBuilder.WriteString(fmt.Sprintf("\"%s\"", paramName))
 
 				if i < len(comment.paramName)-1 {
