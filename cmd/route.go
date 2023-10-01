@@ -66,7 +66,13 @@ func (receiver *route) Execute(args []string) {
 			fmt.Printf("找到路由：area=%s, [%s]%s ==> %s.%s\n", rc.Area, rc.Method, rc.Url, rc.PackageName, rc.FuncName)
 
 			rc.Url = strings.TrimPrefix(rc.Url, "/")
-			rc.Url = "/" + rc.Area + "/" + rc.Url
+			if !strings.HasPrefix(rc.Area, "/") {
+				rc.Area = "/" + rc.Area
+			}
+			if !strings.HasSuffix(rc.Area, "/") {
+				rc.Area = rc.Area + "/"
+			}
+			rc.Url = rc.Area + rc.Url
 			rc.Url = strings.Replace(rc.Url, "{action}", rc.FuncName, -1)
 			routeComments = append(routeComments, rc)
 		}
