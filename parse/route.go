@@ -93,10 +93,6 @@ func (receiver *RouteComment) ParseFuncType(astFile *ast.File, funcDecl *ast.Fun
 		case *ast.SelectorExpr:
 			packageName := fieldType.X.(*ast.Ident).Name
 			paramTypeName = packageName + "." + fieldType.Sel.Name
-			//if paramTypeName == "time.Time" {
-			//	isBasic = true
-			//	continue
-			//}
 			// 通过包名，去获取包路径
 			typeName = receiver.parseType(astFile, packageName, fieldType.Sel.Name)
 		case *ast.Ident:
@@ -137,7 +133,8 @@ func (receiver *RouteComment) parseType(astFile *ast.File, packageName string, p
 	for _, importSpec := range astFile.Imports {
 		// 去除前后""
 		packagePath := strings.Trim(importSpec.Path.Value, "\"")
-		if !strings.HasSuffix(packagePath, packageName) {
+		// 找到包名对应的import后，得到包
+		if !strings.HasSuffix(packagePath, packageName) && (importSpec.Name == nil || importSpec.Name.Name != packageName) {
 			continue
 		}
 		packagePath = strings.TrimPrefix(packagePath, receiver.TopPackageName)
