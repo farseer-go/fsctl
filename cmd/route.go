@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/farseer-go/fs"
 	"github.com/farseer-go/fsctl/parse"
 	"github.com/farseer-go/fsctl/utils"
 	"github.com/farseer-go/utils/file"
@@ -55,7 +56,7 @@ func (receiver *route) Execute(args []string) {
 		// 解析成功
 		if rc.IsHaveComment() {
 			// 移除相对路径和文件名，得到包路径
-			rc.PackagePath = receiver.topPackageName + "/" + filePath[len(receiver.projectPath):strings.LastIndex(filePath, "/")]
+			rc.PackagePath = receiver.topPackageName + "/" + filePath[len(receiver.projectPath):strings.LastIndex(filePath, fs.PathSymbol)]
 			// 解析函数类型
 			rc.ParseFuncType(astFile, funcDecl)
 			if rc.Area != "" {
