@@ -32,6 +32,8 @@ func (receiver *route) Execute(args []string) {
 	var routeComments []parse.RouteComment
 	// 解析整个项目
 	parse.AstDirFuncDecl(receiver.projectPath, func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl) {
+		// 统计转成linux目录格式
+		filePath = strings.ReplaceAll(filePath, fs.PathSymbol, "/")
 		if funcDecl.Doc == nil {
 			return
 		}
@@ -56,7 +58,7 @@ func (receiver *route) Execute(args []string) {
 		// 解析成功
 		if rc.IsHaveComment() {
 			// 移除相对路径和文件名，得到包路径
-			rc.PackagePath = receiver.topPackageName + "/" + filePath[len(receiver.projectPath):strings.LastIndex(filePath, fs.PathSymbol)]
+			rc.PackagePath = receiver.topPackageName + "/" + filePath[len(receiver.projectPath):strings.LastIndex(filePath, "/")]
 			// 解析函数类型
 			rc.ParseFuncType(astFile, funcDecl)
 			if rc.Area != "" {
