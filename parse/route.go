@@ -99,7 +99,12 @@ func (receiver *RouteComment) ParseFuncType(astFile *ast.File, funcDecl *ast.Fun
 			paramTypeName = fieldType.Name
 			typeName = paramTypeName
 		case *ast.ArrayType:
-			paramTypeName = "[]" + fieldType.Elt.(*ast.Ident).Name
+			switch elt := fieldType.Elt.(type) {
+			case *ast.Ident:
+				paramTypeName = "[]" + elt.Name
+			case *ast.SelectorExpr:
+				paramTypeName = "[]" + elt.X.(*ast.Ident).Name + "." + elt.Sel.Name
+			}
 			typeName = paramTypeName
 		default:
 			paramTypeName = field.Names[0].Name
