@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/farseer-go/fs"
+	"github.com/farseer-go/fs/path"
 	"github.com/farseer-go/fsctl/parse"
 	"github.com/farseer-go/fsctl/utils"
 	"github.com/farseer-go/utils/file"
@@ -33,7 +33,7 @@ func (receiver *route) Execute(args []string) {
 	// 解析整个项目
 	parse.AstDirFuncDecl(receiver.projectPath, func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl) {
 		// 统计转成linux目录格式
-		filePath = strings.ReplaceAll(filePath, fs.PathSymbol, "/")
+		filePath = strings.ReplaceAll(filePath, path.PathSymbol, "/")
 		if funcDecl.Doc == nil {
 			return
 		}
