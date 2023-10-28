@@ -21,6 +21,7 @@ type mod struct {
 }
 
 func (receiver *mod) Execute(args []string) {
+	fmt.Println(receiver.projectPath)
 	go receiver.print()
 	lst := parse.GetModRequire(receiver.projectPath)
 	lst.For(func(index int, packagePath *string) {
