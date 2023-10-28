@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// 自动配置路由
 func init() {
 	str, _ := os.Getwd()
 	c := &route{projectPath: str + "/"}
