@@ -9,3 +9,8 @@ farseer-go 编译工具
 * fsctl add	| -a	添加领域
 * fsctl mod	| -m	更新mod到最新版本
 ```
+
+## 如何安装
+```shell
+go install github.com/farseer-go/fsctl@latest
+```
