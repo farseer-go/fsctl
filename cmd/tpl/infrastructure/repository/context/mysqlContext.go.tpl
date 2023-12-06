@@ -19,5 +19,5 @@ type mysqlContext struct {
 
 // InitMysqlContext 初始化上下文
 func InitMysqlContext() {
-	MysqlContext = data.NewContext[mysqlContext]("default", true)
+	MysqlContext = data.NewContext[mysqlContext]("default")
 }
