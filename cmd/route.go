@@ -84,6 +84,8 @@ func (receiver *route) Execute(args []string) {
 
 	// 生成route.go文件
 	parse.BuildRoute(receiver.routePath, routeComments)
+
+	fmt.Printf("共生成路由：%s条\n", utils.Red(len(routeComments)))
 }
 
 func (receiver *route) FullCommand() string {
