@@ -12,5 +12,35 @@ farseer-go 编译工具
 
 ## 如何安装
 ```shell
-sudo curl -L -o /usr/local/bin/fsctl https://github.com/farseer-go/fsctl/releases/download/v0.10.1/fsctl.$(uname -s).$(uname -m) && sudo chmod +x /usr/local/bin/fsctl
+sudo curl -L -o /usr/local/bin/fsctl "https://github.com/farseer-go/fsctl/releases/download/v0.10.1/fsctl.$(uname -s).$(uname -m)" && sudo chmod +x /usr/local/bin/fsctl
+```
+
+## 新建项目
+```shell
+[root@test ~]# fsctl new testgo
+共生成路由：0条
+成功...
+[root@test ~]# tree testgo/
+testgo/
+├── application
+│   └── module.go
+├── domain
+│   └── module.go
+├── farseer.yaml
+├── go.mod
+├── infrastructure
+│   ├── module.go
+│   └── repository
+│       ├── context
+│       │   ├── mysqlContext.go
+│       │   └── redisContext.go
+│       └── model
+├── interfaces
+│   └── module.go
+├── main.go
+├── route.go
+├── startupModule.go
+└── wwwroot
+
+8 directories, 11 files
 ```
