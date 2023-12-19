@@ -20,8 +20,8 @@ go.work
 /test/log/
 /project1/
 /fsctl
-/fsctl.darwin.amd64
-/fsctl.linux.386
-/fsctl.linux.amd64
-/fsctl.windows.amd64
-/fsctl.windows.386
+/fsctl.Darwin.x86_64
+/fsctl.Linux.i686
+/fsctl.Linux.x86_64
+/fsctl.Windows.x86_64
+/fsctl.Windows.i686
