@@ -12,5 +12,5 @@ farseer-go 编译工具
 
 ## 如何安装
 ```shell
-go install github.com/farseer-go/fsctl@latest
+sudo curl -L -o /usr/local/bin/fsctl https://github.com/farseer-go/fsctl/releases/download/v0.10.0/fsctl.linux.amd64 && sudo chmod +x /usr/local/bin/fsctl
 ```
