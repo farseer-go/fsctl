@@ -8,4 +8,4 @@ require (
 	github.com/farseer-go/utils v0.11.0
 )
 
-require github.com/timandy/routine v1.1.2 // indirect
+require github.com/timandy/routine v1.1.3 // indirect
