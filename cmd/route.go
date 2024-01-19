@@ -14,6 +14,7 @@ import (
 // 自动配置路由
 func init() {
 	str, _ := os.Getwd()
+	str = "/Users/steden/Desktop/code/project/lb188/lbs"
 	c := &route{projectPath: str + "/"}
 	Commands[c.ShortCommand()] = c
 	Commands[c.FullCommand()] = c
@@ -48,16 +49,18 @@ func (receiver *route) Execute(args []string) {
 				rc.ParsePackageComment(ant)
 			}
 		}
+		// 路由地址 Key = {area}/order/{action}, Value = Method (get/post/put/delete)
+		mapRoute := make(map[string]string)
 		// 解析是否有注解
 		for _, comment := range funcDecl.Doc.List {
 			// 得到注解
 			ant := parse.GetAnnotation(comment.Text)
 			// 解析
-			rc.ParseFuncComment(ant)
+			rc.ParseFuncComment(ant, mapRoute)
 		}
 
 		// 解析成功
-		if rc.IsHaveComment() {
+		if rc.IsHaveComment(mapRoute) {
 			// 移除相对路径和文件名，得到包路径
 			rc.PackagePath = receiver.topPackageName + "/" + filePath[len(receiver.projectPath):strings.LastIndex(filePath, "/")]
 			// 解析函数类型
@@ -66,19 +69,23 @@ func (receiver *route) Execute(args []string) {
 				rc.Area = strings.TrimPrefix(rc.Area, "/")
 				rc.Area = strings.TrimSuffix(rc.Area, "/")
 			}
-
-			fmt.Printf("找到路由：area=%s, [%s]%s ==> %s.%s\n", rc.Area, rc.Method, rc.Url, rc.PackageName, rc.FuncName)
-
-			rc.Url = strings.TrimPrefix(rc.Url, "/")
 			if !strings.HasPrefix(rc.Area, "/") {
 				rc.Area = "/" + rc.Area
 			}
 			if !strings.HasSuffix(rc.Area, "/") {
 				rc.Area = rc.Area + "/"
 			}
-			rc.Url = rc.Area + rc.Url
-			rc.Url = strings.Replace(rc.Url, "{action}", rc.FuncName, -1)
-			routeComments = append(routeComments, rc)
+
+			for url, method := range mapRoute {
+				url = strings.TrimPrefix(url, "/")
+				url = rc.Area + url
+				url = strings.Replace(url, "{action}", rc.FuncName, -1)
+				fmt.Printf("找到路由：area=%s, [%s]%s ==> %s.%s\n", rc.Area, method, url, rc.PackageName, rc.FuncName)
+
+				rc.Url = url
+				rc.Method = method
+				routeComments = append(routeComments, rc)
+			}
 		}
 	})
 

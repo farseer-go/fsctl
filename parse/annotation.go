@@ -45,5 +45,5 @@ func (receiver *Annotation) IsApi() bool {
 	return (receiver.Cmd == "get" ||
 		receiver.Cmd == "post" ||
 		receiver.Cmd == "put" ||
-		receiver.Cmd == "delete") && len(receiver.Args) == 1
+		receiver.Cmd == "delete") && len(receiver.Args) == 1 && receiver.Args[0] != ""
 }

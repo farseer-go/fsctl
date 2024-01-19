@@ -47,14 +47,13 @@ func (receiver *RouteComment) ParsePackageComment(ant *Annotation) {
 }
 
 // ParseFuncComment 解析函数注解
-func (receiver *RouteComment) ParseFuncComment(ant *Annotation) {
+func (receiver *RouteComment) ParseFuncComment(ant *Annotation, route map[string]string) {
 	if ant == nil {
 		return
 	}
 	// 解析路由地址 @get @post @put @delete
 	if ant.IsApi() {
-		receiver.Method = strings.ToUpper(ant.Cmd)
-		receiver.Url = ant.Args[0]
+		route[ant.Args[0]] = strings.ToUpper(ant.Cmd)
 		return
 	}
 
@@ -135,10 +134,11 @@ func (receiver *RouteComment) ParseFuncType(astFile *ast.File, funcDecl *ast.Fun
 }
 
 // IsHaveComment 是否有解析到
-func (receiver *RouteComment) IsHaveComment() bool {
-	return receiver.Url != ""
+func (receiver *RouteComment) IsHaveComment(route map[string]string) bool {
+	return len(route) > 0
 }
 
+// 解析入参的类型/interface、struct、基础类型
 func (receiver *RouteComment) parseType(astFile *ast.File, packageName string, paramTypeName string) string {
 	var typeName string
 
