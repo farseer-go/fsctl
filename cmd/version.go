@@ -5,8 +5,8 @@ import (
 	"github.com/farseer-go/fsctl/utils"
 )
 
-const ver = "v0.13.0.beta1"
-const farseerVer = "v0.12.0"
+const ver = "v0.13.0"
+const farseerVer = "v0.13.0"
 
 func init() {
 	c := &version{}
