@@ -6,7 +6,7 @@ import (
 )
 
 const ver = "v0.13.0"
-const farseerVer = "v0.13.0"
+const farseerVer = "v0.12.0"
 
 func init() {
 	c := &version{}
