@@ -7,6 +7,8 @@ import (
 	"github.com/farseer-go/fsctl/builder"
 	"github.com/farseer-go/utils/condition"
 	"go/ast"
+	"go/build"
+	"strconv"
 	"strings"
 )
 
@@ -66,6 +68,9 @@ func (receiver *RouteComment) ParseFuncComment(ant *Annotation) {
 
 	// 解析过滤器 @di
 	if ant.IsDi() {
+		if ant.Args[1] == "nil" {
+			ant.Args[1] = ""
+		}
 		receiver.IocNames[ant.Args[0]] = ant.Args[1]
 		return
 	}
@@ -82,6 +87,7 @@ func (receiver *RouteComment) ParseFuncType(astFile *ast.File, funcDecl *ast.Fun
 	// 函数的名称
 	receiver.PackageName = astFile.Name.Name
 	receiver.FuncName = funcDecl.Name.Name
+
 	// 解析函数的入参
 	for _, field := range funcDecl.Type.Params.List {
 		var paramTypeName string
@@ -135,16 +141,35 @@ func (receiver *RouteComment) IsHaveComment() bool {
 
 func (receiver *RouteComment) parseType(astFile *ast.File, packageName string, paramTypeName string) string {
 	var typeName string
+
 	for _, importSpec := range astFile.Imports {
 		// 去除前后""
-		packagePath := strings.Trim(importSpec.Path.Value, "\"")
+		packagePath, _ := strconv.Unquote(importSpec.Path.Value)
 		// 找到包名对应的import后，得到包
 		if !strings.HasSuffix(packagePath, packageName) && (importSpec.Name == nil || importSpec.Name.Name != packageName) {
 			continue
 		}
-		packagePath = strings.TrimPrefix(packagePath, receiver.TopPackageName)
 
-		AstDirTypeDecl(receiver.ProjectPath+packagePath, func(filePath string, astFile *ast.File, genDecl *ast.GenDecl) {
+		var filePath string
+		// 说明是项目内的包
+		if strings.HasPrefix(packagePath, receiver.TopPackageName) {
+			packagePath = strings.TrimPrefix(packagePath, receiver.TopPackageName)
+			packagePath = strings.TrimPrefix(packagePath, "/")
+			filePath = receiver.ProjectPath + packagePath
+		} else {
+			// 使用的第三方组件
+			filePath = packagePath
+
+			// 创建一个新的构建上下文对象
+			ctx := build.Default
+			pkg, err := ctx.Import(filePath, "", build.FindOnly)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			filePath = pkg.Dir
+		}
+
+		AstDirTypeDecl(filePath, func(filePath string, astFile *ast.File, genDecl *ast.GenDecl) {
 			for _, specs := range genDecl.Specs {
 				switch d := specs.(type) {
 				case *ast.TypeSpec:
@@ -226,6 +251,7 @@ func BuildRoute(routePath string, routeComments []RouteComment) {
 			contents = strings.ReplaceAll(contents, "{funcName}", comment.PackageName+"."+comment.FuncName)
 			contents = strings.ReplaceAll(contents, "{message}", comment.StatusMessage)
 			contents = strings.ReplaceAll(contents, "{filters}", strings.Join(comment.filters, ","))
+
 			// 函数的入参
 			var paramBuilder strings.Builder
 			for i := 0; i < len(comment.paramName); i++ {
@@ -268,6 +294,7 @@ func loadImports(routeComments []RouteComment) collections.List[packageImportVO]
 		imports.Add(rc.PackagePath)
 	}
 
+	// 对包进行排序，符合IDE的排序规则
 	lstPackageImport := collections.NewList[packageImportVO]()
 	imports.Distinct().OrderByItem().Foreach(func(item *string) {
 		lstPackageImport.Add(packageImportVO{packagePath: *item})

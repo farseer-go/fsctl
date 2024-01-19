@@ -13,6 +13,7 @@ func AstDirFuncDecl(path string, fund func(filePath string, astFile *ast.File, f
 	for _, filePath := range files {
 		paths := strings.Split(filePath, "/")
 		fileName := paths[len(paths)-1:][0]
+		// 过滤 _开头、_test.go结尾
 		if strings.HasPrefix(fileName, "_") || strings.HasSuffix(filePath, "_test.go") {
 			continue
 		}
