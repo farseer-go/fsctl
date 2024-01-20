@@ -14,7 +14,6 @@ import (
 // 自动配置路由
 func init() {
 	str, _ := os.Getwd()
-	str = "/Users/steden/Desktop/code/project/lb188/lbs"
 	c := &route{projectPath: str + "/"}
 	Commands[c.ShortCommand()] = c
 	Commands[c.FullCommand()] = c
