@@ -33,12 +33,10 @@ func (receiver *Annotation) IsFilter() bool {
 	return receiver.Cmd == "filter"
 }
 
+func (receiver *Annotation) IsCodeReview() bool { return receiver.Cmd == "codereview" }
+
 func (receiver *Annotation) IsDi() bool {
 	return receiver.Cmd == "di" && len(receiver.Args) == 2
-}
-
-func (receiver *Annotation) IsCodeReview() bool {
-	return receiver.Cmd == "codeReview"
 }
 
 func (receiver *Annotation) IsMessage() bool {
