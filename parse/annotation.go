@@ -37,6 +37,10 @@ func (receiver *Annotation) IsDi() bool {
 	return receiver.Cmd == "di" && len(receiver.Args) == 2
 }
 
+func (receiver *Annotation) IsCodeReview() bool {
+	return receiver.Cmd == "codeReview"
+}
+
 func (receiver *Annotation) IsMessage() bool {
 	return receiver.Cmd == "message" && len(receiver.Args) == 1
 }

@@ -26,6 +26,7 @@ type RouteComment struct {
 	paramName      []funcParam       // handle入参
 	ProjectPath    string            // 项目根目录
 	TopPackageName string            // 顶级包名
+	CodeReview     bool              // 是否做了CodeReview
 }
 
 type funcParam struct {
@@ -72,6 +73,10 @@ func (receiver *RouteComment) ParseFuncComment(ant *Annotation, route map[string
 		}
 		receiver.IocNames[ant.Args[0]] = ant.Args[1]
 		return
+	}
+
+	if ant.IsCodeReview() {
+		receiver.CodeReview = true
 	}
 
 	// 解析返回Message @message

@@ -30,6 +30,7 @@ func (receiver *route) Execute(args []string) {
 	receiver.topPackageName = parse.GetRootPackage(receiver.projectPath)
 	receiver.checkRoute()
 
+	codeReviewCount := 0
 	var routeComments []parse.RouteComment
 	// 解析整个项目
 	parse.AstDirFuncDecl(receiver.projectPath, func(filePath string, astFile *ast.File, funcDecl *ast.FuncDecl) {
@@ -85,13 +86,17 @@ func (receiver *route) Execute(args []string) {
 				rc.Method = method
 				routeComments = append(routeComments, rc)
 			}
+			// 统计代码审核过的数量
+			if rc.CodeReview {
+				codeReviewCount++
+			}
 		}
 	})
 
 	// 生成route.go文件
 	parse.BuildRoute(receiver.routePath, routeComments)
 
-	fmt.Printf("共生成路由：%s条\n", utils.Red(len(routeComments)))
+	fmt.Printf("共生成路由：%s条，代码审核：%s条\n", utils.Red(len(routeComments)), utils.Blue(codeReviewCount))
 }
 
 func (receiver *route) FullCommand() string {
