@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/farseer-go/fs/flog"
 	"github.com/farseer-go/fs/path"
 	"github.com/farseer-go/fsctl/parse"
 	"github.com/farseer-go/fsctl/utils"
@@ -80,15 +81,19 @@ func (receiver *route) Execute(args []string) {
 				url = strings.TrimPrefix(url, "/")
 				url = rc.Area + url
 				url = strings.Replace(url, "{action}", rc.FuncName, -1)
-				fmt.Printf("找到路由：area=%s, [%s]%s ==> %s.%s\n", rc.Area, method, url, rc.PackageName, rc.FuncName)
-
+				if rc.CodeReview {
+					fmt.Printf("找到路由%s：area=%s, [%s]%s ==> %s.%s\n", flog.Red("（已审核）"), rc.Area, flog.Green(method), url, flog.Blue(rc.PackageName), flog.Blue(rc.FuncName))
+				} else {
+					fmt.Printf("找到路由：area=%s, [%s]%s ==> %s.%s\n", rc.Area, flog.Green(method), url, flog.Blue(rc.PackageName), flog.Blue(rc.FuncName))
+				}
 				rc.Url = url
 				rc.Method = method
 				routeComments = append(routeComments, rc)
-			}
-			// 统计代码审核过的数量
-			if rc.CodeReview {
-				codeReviewCount++
+
+				// 统计代码审核过的数量
+				if rc.CodeReview {
+					codeReviewCount++
+				}
 			}
 		}
 	})
