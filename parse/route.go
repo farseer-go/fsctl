@@ -299,6 +299,24 @@ func loadImports(routeComments []RouteComment) collections.List[packageImportVO]
 		imports.Add(rc.PackagePath)
 	}
 
+	// 添加过滤器的包
+	for _, rc := range routeComments {
+		for _, filter := range rc.filters {
+			// 没有找到这个过滤器的包
+			if filterPackageName := strings.Split(filter, ".")[0]; filterPackageName != "" && !imports.ContainsSuffix(filterPackageName) {
+				// 从已加载的包中推导出来
+				for _, name := range imports.ToArray() {
+					// 找到了，则加入到包中
+					if index := strings.Index(name, filterPackageName+"/"); index > -1 {
+						name = name[:index+len(filterPackageName)]
+						imports.Add(name)
+						break
+					}
+				}
+			}
+		}
+	}
+
 	// 对包进行排序，符合IDE的排序规则
 	lstPackageImport := collections.NewList[packageImportVO]()
 	imports.Distinct().OrderByItem().Foreach(func(item *string) {
