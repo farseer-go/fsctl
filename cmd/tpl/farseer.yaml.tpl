@@ -16,6 +16,18 @@ WebApi:
     Store: "Redis"
     StoreConfigName: "default"
     Age: 1800
+FSchedule:
+  ClientIp: ""
+  ClientPort: 7002
+  Server:
+    Token: ""
+    Address:
+      - "{{fschedule_addr}}"
+Fops:
+  Server: "https://fops.xxx.xxx"
+LinkTrace:
+  Enable: true
+  PrintLog: false
 Log:
   Default:
     LogLevel: "info"          # 只记录级别>=info的日志内容
