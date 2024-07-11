@@ -14,6 +14,22 @@ const modulePrefix = "module "
 
 // GetRootPackage 得到包名
 func GetRootPackage(rootPath string) string {
+	goModPath := rootPath + "go.mod"
+	goModContent := file.ReadAllLines(goModPath)
+	if len(goModContent) == 0 {
+		fmt.Printf(utils.Red("无法读取go.mod文件\n"))
+		os.Exit(0)
+	}
+	for _, content := range goModContent {
+		if strings.HasPrefix(content, modulePrefix) {
+			return content[len(modulePrefix):]
+		}
+	}
+	return ""
+}
+
+// GetRootPackage2 得到包名
+func GetRootPackage2(rootPath string) string {
 	receiveOutput := make(chan string, 100)
 	exec.RunShell("go list", receiveOutput, nil, rootPath, false)
 	result := collections.NewListFromChan(receiveOutput)
