@@ -52,7 +52,7 @@ func (receiver *RouteComment) ParseFuncComment(ant *Annotation, route map[string
 	if ant == nil {
 		return
 	}
-	// 解析路由地址 @get @post @put @delete
+	// 解析路由地址 @get @post @put @delete @ws
 	if ant.IsApi() {
 		route[ant.Args[0]] = strings.ToUpper(ant.Cmd)
 		return
