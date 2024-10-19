@@ -25,3 +25,4 @@ go.work
 /fsctl.Linux.x86_64
 /fsctl.Windows.x86_64
 /fsctl.Windows.i686
+*.DS_Store
