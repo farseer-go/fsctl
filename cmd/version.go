@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/farseer-go/fsctl/utils"
 )
 
-const ver = "v0.14.2"
-const farseerVer = "v0.14.0"
+const ver = "v0.15.0"
+const farseerVer = "v0.15.0"
 
 func init() {
 	c := &version{}
