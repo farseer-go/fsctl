@@ -2,14 +2,15 @@ package parse
 
 import (
 	"fmt"
-	"github.com/farseer-go/collections"
-	"github.com/farseer-go/fs/parse"
-	"github.com/farseer-go/fsctl/builder"
-	"github.com/farseer-go/utils/condition"
 	"go/ast"
 	"go/build"
 	"strconv"
 	"strings"
+
+	"github.com/farseer-go/collections"
+	"github.com/farseer-go/fs/parse"
+	"github.com/farseer-go/fsctl/builder"
+	"github.com/farseer-go/utils/condition"
 )
 
 // RouteComment 路由注解、函数类型
