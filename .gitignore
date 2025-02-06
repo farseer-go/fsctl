@@ -26,3 +26,4 @@ go.work
 /fsctl.Windows.x86_64
 /fsctl.Windows.i686
 *.DS_Store
+/runtime

@@ -7,15 +7,27 @@ import (
 	"github.com/farseer-go/utils/exec"
 	"github.com/farseer-go/utils/file"
 	"os"
+	"runtime"
 	"strings"
 )
 
 const modulePrefix = "module "
 
+func ReadAllLines(filePath string) []string {
+	file, _ := os.ReadFile(filePath)
+	content := strings.ReplaceAll(string(file), "\r\n", "\n")
+	return strings.Split(content, "\n")
+}
+
 // GetRootPackage 得到包名
 func GetRootPackage(rootPath string) string {
 	goModPath := rootPath + "go.mod"
-	goModContent := file.ReadAllLines(goModPath)
+	var goModContent []string
+	if runtime.GOOS == "windows" {
+		goModContent = ReadAllLines(goModPath)
+	} else {
+		goModContent = file.ReadAllLines(goModPath)
+	}
 	if len(goModContent) == 0 {
 		fmt.Printf(utils.Red("无法读取go.mod文件\n"))
 		os.Exit(0)
