@@ -15,6 +15,7 @@ import (
 
 // RouteComment 路由注解、函数类型
 type RouteComment struct {
+	Summary        string            // api的描述 @summary
 	Area           string            // 区域 @area
 	Url            string            // 路由地址 @get {area}/order/{action}
 	Method         string            // 路由method @get {area}/order/{action}

@@ -2,14 +2,15 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/farseer-go/fs/flog"
+	"go/ast"
+	"os"
+	"strings"
+
+	"github.com/farseer-go/fs/color"
 	"github.com/farseer-go/fs/path"
 	"github.com/farseer-go/fsctl/parse"
 	"github.com/farseer-go/fsctl/utils"
 	"github.com/farseer-go/utils/file"
-	"go/ast"
-	"os"
-	"strings"
 )
 
 // 自动配置路由
@@ -82,9 +83,9 @@ func (receiver *route) Execute(args []string) {
 				url = rc.Area + url
 				url = strings.Replace(url, "{action}", rc.FuncName, -1)
 				if rc.CodeReview {
-					fmt.Printf("找到路由%s：area=%s, [%s]%s ==> %s.%s\n", flog.Red("（已审核）"), rc.Area, flog.Green(method), url, flog.Blue(rc.PackageName), flog.Blue(rc.FuncName))
+					fmt.Printf("找到路由%s：area=%s, [%s]%s ==> %s.%s\n", color.Red("（已审核）"), rc.Area, color.Green(method), url, color.Blue(rc.PackageName), color.Blue(rc.FuncName))
 				} else {
-					fmt.Printf("找到路由：area=%s, [%s]%s ==> %s.%s\n", rc.Area, flog.Green(method), url, flog.Blue(rc.PackageName), flog.Blue(rc.FuncName))
+					fmt.Printf("找到路由：area=%s, [%s]%s ==> %s.%s\n", rc.Area, color.Green(method), url, color.Blue(rc.PackageName), color.Blue(rc.FuncName))
 				}
 				rc.Url = url
 				rc.Method = method
