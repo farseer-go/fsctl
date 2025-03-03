@@ -43,6 +43,10 @@ func (receiver *Annotation) IsMessage() bool {
 	return receiver.Cmd == "message" && len(receiver.Args) == 1
 }
 
+func (receiver *Annotation) IsSummary() bool {
+	return receiver.Cmd == "summary" && len(receiver.Args) == 1
+}
+
 func (receiver *Annotation) IsApi() bool {
 	return (receiver.Cmd == "get" ||
 		receiver.Cmd == "post" ||
