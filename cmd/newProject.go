@@ -3,10 +3,12 @@ package cmd
 import (
 	_ "embed"
 	"fmt"
+	"os"
+
+	"github.com/farseer-go/fs/core"
 	"github.com/farseer-go/fsctl/builder"
 	"github.com/farseer-go/fsctl/utils"
 	"github.com/farseer-go/utils/file"
-	"os"
 )
 
 func init() {
@@ -81,7 +83,7 @@ func (receiver *newProject) Execute(args []string) {
 	// 模板变量
 	tplValue := map[string]string{
 		"{projectName}": receiver.projectName,
-		"{farseerVer}":  farseerVer,
+		"{farseerVer}":  core.Version,
 	}
 	// domain
 	builder.TplBuilder(domainModuleTpl, tplValue, receiver.projectPath+"domain/module.go") // domain/module.go

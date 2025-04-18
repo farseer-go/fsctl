@@ -3,12 +3,14 @@ package cmd
 import (
 	_ "embed"
 	"fmt"
+	"os"
+	"strings"
+
+	"github.com/farseer-go/fs/core"
 	"github.com/farseer-go/fsctl/builder"
 	"github.com/farseer-go/fsctl/parse"
 	"github.com/farseer-go/fsctl/utils"
 	"github.com/farseer-go/utils/file"
-	"os"
-	"strings"
 )
 
 func init() {
@@ -56,7 +58,7 @@ func (receiver *add) Execute(args []string) {
 	// 模板变量
 	tplValue := map[string]string{
 		"{projectName}": receiver.projectName,
-		"{farseerVer}":  farseerVer,
+		"{farseerVer}":  core.Version,
 		"{Do}":          receiver.upperName,
 		"{do}":          receiver.lowerName,
 	}

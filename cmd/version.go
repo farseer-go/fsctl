@@ -3,11 +3,9 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/farseer-go/fs/core"
 	"github.com/farseer-go/fsctl/utils"
 )
-
-const ver = "v0.16.0"
-const farseerVer = "v0.16.0"
 
 func init() {
 	c := &version{}
@@ -19,8 +17,7 @@ type version struct {
 }
 
 func (receiver *version) Execute(args []string) {
-	fmt.Println("工具版本：", utils.Yellow(ver))
-	fmt.Println("框架版本：", utils.Yellow(farseerVer))
+	fmt.Println("工具版本：", utils.Yellow(core.Version))
 }
 func (receiver *version) FullCommand() string {
 	return "version"
