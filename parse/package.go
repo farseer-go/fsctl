@@ -2,13 +2,14 @@ package parse
 
 import (
 	"fmt"
+	"os"
+	"runtime"
+	"strings"
+
 	"github.com/farseer-go/collections"
 	"github.com/farseer-go/fsctl/utils"
 	"github.com/farseer-go/utils/exec"
 	"github.com/farseer-go/utils/file"
-	"os"
-	"runtime"
-	"strings"
 )
 
 const modulePrefix = "module "
@@ -42,9 +43,7 @@ func GetRootPackage(rootPath string) string {
 
 // GetRootPackage2 得到包名
 func GetRootPackage2(rootPath string) string {
-	receiveOutput := make(chan string, 100)
-	exec.RunShell("go list", receiveOutput, nil, rootPath, false)
-	result := collections.NewListFromChan(receiveOutput)
+	result, _ := exec.RunShellCommand("go list", nil, rootPath, false)
 	if result.Count() == 0 {
 		fmt.Printf(utils.Red("当前目录没有go.mod文件\n"))
 	}

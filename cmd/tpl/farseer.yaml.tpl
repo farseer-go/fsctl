@@ -1,5 +1,5 @@
 Database:
-  default: "DataType=mysql,PoolMaxSize=50,PoolMinSize=1,ConnectionString=root:steden@123@tcp(127.0.0.1:3306)/dbname?charset=utf8&parseTime=True&loc=Local"
+  default: "DataType=mysql,PoolMaxSize=5,PoolMinSize=1,ConnectionString=root:steden@123@tcp(127.0.0.1:3306)/dbname?charset=utf8&parseTime=True&loc=Local"
 Redis:
   default: "Server=127.0.0.1:6379,DB=13,Password=,ConnectTimeout=600000,SyncTimeout=10000,ResponseTimeout=10000"
 Rabbit:

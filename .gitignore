@@ -20,6 +20,7 @@ go.work
 /test/log/
 /project1/
 /fsctl
+/fsctl.Darwin.arm64
 /fsctl.Darwin.x86_64
 /fsctl.Linux.i686
 /fsctl.Linux.x86_64
