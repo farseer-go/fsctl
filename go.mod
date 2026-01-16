@@ -1,8 +1,6 @@
 module github.com/farseer-go/fsctl
 
-go 1.23.0
-
-toolchain go1.23.3
+go 1.18.0
 
 require (
 	github.com/farseer-go/collections v0.17.3
