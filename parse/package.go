@@ -43,11 +43,12 @@ func GetRootPackage(rootPath string) string {
 
 // GetRootPackage2 得到包名
 func GetRootPackage2(rootPath string) string {
-	result, _ := exec.RunShellCommand("go", []string{"list"}, nil, rootPath, false)
-	if result.Count() == 0 {
+	wait := exec.RunShell("go", []string{"list"}, nil, rootPath, false)
+	packageName, _ := wait.WaitToFirstResult()
+	if packageName == "" {
 		fmt.Printf(utils.Red("当前目录没有go.mod文件\n"))
 	}
-	packageName := result.First()
+
 	if strings.Contains(packageName, "go.mod file not found") {
 		fmt.Printf(utils.Red("当前目录没有go.mod文件\n"))
 	}
