@@ -51,7 +51,7 @@ var mysqlContextTpl string
 //go:embed tpl/infrastructure/repository/context/redisContext.go.tpl
 var redisContextTpl string
 
-//go:embed tpl/farseer.yaml.tpl
+//go:embed tpl/config.yaml.tpl
 var farseerYamlTpl string
 
 // Execute fsctl new project1
@@ -101,7 +101,7 @@ func (receiver *newProject) Execute(args []string) {
 	builder.TplBuilder(modTpl, tplValue, receiver.projectPath+"go.mod")                            // go.mod
 	builder.TplBuilder(mainTpl, tplValue, receiver.projectPath+"main.go")                          // main.mod
 	builder.TplBuilder(startupModuleBuilderTpl, tplValue, receiver.projectPath+"startupModule.go") // startupModule.mod
-	builder.TplBuilder(farseerYamlTpl, tplValue, receiver.projectPath+"farseer.yaml")              // farseer.yaml
+	builder.TplBuilder(farseerYamlTpl, tplValue, receiver.projectPath+"config.yaml")               // config.yaml
 	// rotue.go
 	r := route{projectPath: receiver.projectPath, routePath: "route.go"}
 	r.Execute(args)

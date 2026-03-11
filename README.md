@@ -26,7 +26,7 @@ testgo/
 │   └── module.go
 ├── domain
 │   └── module.go
-├── farseer.yaml
+├── config.yaml
 ├── go.mod
 ├── infrastructure
 │   ├── module.go
